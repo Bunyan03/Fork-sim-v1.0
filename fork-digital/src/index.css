@@ -1,0 +1,435 @@
+@import url('https://fonts.googleapis.com/css2?family=Courier+Prime:ital,wght@0,400;0,700;1,400;1,700&display=swap');
+
+:root {
+  --bg-color: #ffffff;
+  --text-primary: #000000;
+  --text-secondary: #000000;
+  --border-thick: 4px solid #000000;
+  --border-accent: 2px dashed #000000;
+  --shadow-quirky: 8px 8px 0px #000000;
+  --primary-color: #000000;
+  --gold: #000000;
+  --danger-color: #000000;
+  --secondary-color: #000000;
+}
+
+body {
+  margin: 0;
+  padding: 0;
+  background-color: var(--bg-color);
+  background-image: radial-gradient(#000 1px, transparent 1px);
+  background-size: 20px 20px;
+  color: var(--text-primary);
+  font-family: 'Courier Prime', Courier, monospace;
+  height: 100vh;
+  display: flex;
+  overflow: hidden;
+  text-transform: uppercase;
+}
+
+#root {
+  width: 100vw;
+  height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+
+.app-container {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+}
+
+.header {
+  padding: 1rem 2rem;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  border-bottom: var(--border-thick);
+  background: #fff;
+  z-index: 10;
+}
+
+.header-title {
+  font-size: 2rem;
+  font-weight: 900;
+  letter-spacing: -2px;
+  color: #fff;
+  background: #000;
+  display: inline-block;
+  padding: 0.5rem 1rem;
+  transform: rotate(-2deg);
+}
+
+.stats-bar {
+  display: flex;
+  gap: 2rem;
+}
+
+.stat-item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  border: var(--border-thick);
+  background: #fff;
+  padding: 0.5rem 1rem;
+  box-shadow: 4px 4px 0px #000;
+  transform: rotate(1deg);
+}
+
+.stat-label {
+  font-size: 0.8rem;
+  font-weight: 700;
+}
+
+.stat-value {
+  font-size: 1.5rem;
+  font-weight: 900;
+}
+
+.main-content {
+  display: flex;
+  flex: 1;
+  overflow: hidden;
+}
+
+.game-board {
+  flex: 2;
+  padding: 3rem;
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  grid-template-rows: repeat(2, 1fr);
+  gap: 2rem;
+  overflow-y: auto;
+}
+
+.player-card {
+  background: #fff;
+  border: var(--border-thick);
+  padding: 1rem;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  box-shadow: var(--shadow-quirky);
+  transition: all 0.1s;
+  position: relative;
+}
+
+.player-card.active {
+  background: #000;
+  color: #fff;
+  transform: translate(8px, 8px);
+  box-shadow: 0px 0px 0px #000;
+}
+
+.player-card.active .player-role {
+  background: #fff;
+  color: #000;
+}
+
+.player-card.active .history-reason, .player-card.active .text-green, .player-card.active .text-red {
+  color: #fff;
+}
+
+.player-card.active .history-entry {
+  border-color: #fff;
+}
+
+.player-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  border-bottom: 2px solid currentColor;
+  padding-bottom: 0.5rem;
+  margin-bottom: 1rem;
+}
+
+.player-name {
+  font-weight: 900;
+  font-size: 1.2rem;
+}
+
+.player-role {
+  font-weight: 900;
+  font-size: 0.8rem;
+  padding: 0.3rem 0.6rem;
+  background: #000;
+  color: #fff;
+  border-radius: 0;
+  border: 2px solid currentColor;
+}
+
+.balance-display {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-size: 3rem;
+  font-weight: 900;
+  letter-spacing: -3px;
+}
+
+.tk-symbol {
+  font-size: 1.5rem;
+  font-weight: 700;
+}
+
+.side-panel {
+  flex: 1;
+  background: #fff;
+  border-left: var(--border-thick);
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+
+.action-dashboard {
+  padding: 2rem;
+  flex: 1;
+  min-height: 0;
+  overflow-y: auto;
+  overflow-x: hidden;
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+
+.dashboard-title {
+  font-size: 1.5rem;
+  font-weight: 900;
+  margin-bottom: 0;
+  border-bottom: 4px solid #000;
+  display: inline-block;
+  padding-bottom: 0.5rem;
+}
+
+.action-btn {
+  background: #fff;
+  border: var(--border-thick);
+  color: #000;
+  padding: 1rem;
+  cursor: pointer;
+  font-weight: 900;
+  font-size: 1rem;
+  text-align: left;
+  transition: all 0.1s ease;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  box-shadow: 4px 4px 0px #000;
+  font-family: inherit;
+  text-transform: inherit;
+}
+
+.action-btn:hover:not(:disabled) {
+  background: #000;
+  color: #fff;
+  transform: translate(4px, 4px);
+  box-shadow: 0px 0px 0px #000;
+}
+
+.action-btn:disabled {
+  opacity: 0.3;
+  cursor: not-allowed;
+  box-shadow: none;
+  transform: translate(4px, 4px);
+}
+
+.btn-primary, .btn-danger {
+  justify-content: center;
+  text-align: center;
+  background: #000;
+  color: #fff;
+}
+
+.btn-primary:hover:not(:disabled), .btn-danger:hover:not(:disabled) {
+  background: #fff;
+  color: #000;
+  border: var(--border-thick);
+  box-shadow: inset 0 0 0 2px #000;
+}
+
+.log-panel {
+  flex: none;
+  height: 35%;
+  flex-shrink: 0;
+  padding: 1.5rem;
+  border-top: var(--border-thick);
+  background: #fff;
+  background-image: repeating-linear-gradient(45deg, #f0f0f0 25%, transparent 25%, transparent 75%, #f0f0f0 75%, #f0f0f0), repeating-linear-gradient(45deg, #f0f0f0 25%, #fff 25%, #fff 75%, #f0f0f0 75%, #f0f0f0);
+  background-position: 0 0, 10px 10px;
+  background-size: 20px 20px;
+  overflow-y: auto;
+  font-weight: 700;
+  font-size: 0.9rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.8rem;
+}
+
+.log-entry {
+  padding: 0.8rem;
+  background: #fff;
+  border: var(--border-thick);
+  box-shadow: 3px 3px 0px #000;
+  animation: slideIn 0.2s steps(2);
+}
+
+@keyframes slideIn {
+  from { transform: translateX(20px); opacity: 0;}
+  to { transform: translateX(0); opacity: 1;}
+}
+
+/* Modals */
+.modal-overlay {
+  position: fixed;
+  top: 0; left: 0; right: 0; bottom: 0;
+  background: rgba(255, 255, 255, 0.9);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000;
+}
+
+.modal-content {
+  background: #fff;
+  border: 8px solid #000;
+  padding: 3rem;
+  width: 90%;
+  max-width: 600px;
+  box-shadow: 15px 15px 0px #000;
+  animation: popIn 0.2s steps(3);
+}
+
+@keyframes popIn {
+  from { transform: scale(0.8) rotate(-5deg); }
+  to { transform: scale(1) rotate(0deg); }
+}
+
+.modal-title {
+  font-size: 2.5rem;
+  font-weight: 900;
+  margin-top: 0;
+  margin-bottom: 2rem;
+  text-align: center;
+  color: #000;
+  letter-spacing: -2px;
+  text-shadow: 3px 3px 0px #ccc;
+}
+
+.form-group {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  margin-bottom: 1.5rem;
+}
+
+.form-group label {
+  font-size: 1rem;
+  font-weight: 900;
+  color: #000;
+}
+
+.form-control {
+  background: #fff;
+  border: var(--border-thick);
+  color: #000;
+  padding: 1rem;
+  font-size: 1.2rem;
+  outline: none;
+  font-family: inherit;
+  text-transform: uppercase;
+  font-weight: 700;
+  box-shadow: inset 4px 4px 0px #eee;
+}
+
+.form-control:focus {
+  background: #fdfdfd;
+}
+
+.vote-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 2rem;
+  margin-top: 2rem;
+}
+
+.puzzle-race-active {
+  background: #fff;
+  border: 8px dashed #000;
+}
+
+.math-problem {
+  font-size: 6rem;
+  text-align: center;
+  font-weight: 900;
+  margin: 2rem 0;
+  letter-spacing: -5px;
+  background: #000;
+  color: #fff;
+  padding: 1rem;
+  transform: rotate(2deg);
+}
+
+/* Player History Styles */
+.player-history {
+  margin-top: 1rem;
+  margin-bottom: 1rem;
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  overflow-y: auto;
+  font-size: 0.8rem;
+  max-height: 120px;
+  padding-right: 5px;
+}
+
+.history-entry {
+  display: flex;
+  justify-content: space-between;
+  padding: 0.2rem 0;
+  border-bottom: var(--border-accent);
+}
+
+.history-reason {
+  color: #000;
+  font-weight: 700;
+}
+
+.text-green, .text-red {
+  color: #000;
+  font-weight: 900;
+}
+
+/* Custom Scrollbar */
+::-webkit-scrollbar {
+  width: 10px;
+}
+::-webkit-scrollbar-track {
+  background: #fff;
+  border-left: 2px solid #000;
+}
+::-webkit-scrollbar-thumb {
+  background: #000;
+  border-radius: 0;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: #333;
+}
+
+/* Added quirky layout blocks */
+.quirk-box {
+  border: var(--border-thick);
+  background: #fff;
+  padding: 1rem;
+  box-shadow: 4px 4px 0px #000;
+  margin-bottom: 1.5rem;
+}
+.quirk-box-title {
+  font-weight: 900;
+  margin-bottom: 1rem;
+  background: #000;
+  color: #fff;
+  display: inline-block;
+  padding: 0.2rem 0.5rem;
+}
