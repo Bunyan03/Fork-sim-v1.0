@@ -1,4 +1,5 @@
 import { useGameState } from '../context/GameState';
+import ActionPanel from './ActionPanel';
 
 export default function GameBoard() {
   const { state } = useGameState();
@@ -20,20 +21,26 @@ export default function GameBoard() {
               </div>
             </div>
 
-            <div className="player-history">
-              {player.history && player.history.map((entry, idx) => (
-                <div key={idx} className="history-entry">
-                  <span className={entry.amount > 0 ? "text-green" : "text-red"}>
-                    {entry.amount > 0 ? '+' : ''}{entry.amount}
-                  </span>
-                  <span className="history-reason">{entry.reason}</span>
+            <div className="player-content-area" style={{ flex: 1, overflowY: 'auto' }}>
+              {isCurrentTurn ? (
+                <ActionPanel />
+              ) : (
+                <div className="player-history">
+                  {player.history && player.history.map((entry, idx) => (
+                    <div key={idx} className="history-entry">
+                      <span className={entry.amount > 0 ? "text-green" : "text-red"}>
+                        {entry.amount > 0 ? '+' : ''}{entry.amount}
+                      </span>
+                      <span className="history-reason">{entry.reason}</span>
+                    </div>
+                  ))}
                 </div>
-              ))}
+              )}
             </div>
             
             <div style={{ marginTop: 'auto', display: 'flex', flexDirection: 'column', gap: '0.5rem' }}>
               {isCurrentTurn && (
-                <div style={{ color: 'var(--primary-color)', fontSize: '0.8rem', fontWeight: 'bold' }}>
+                <div style={{ color: 'var(--primary-color)', fontSize: '0.8rem', fontWeight: 'bold', paddingTop: '0.5rem' }}>
                   CURRENT TURN
                 </div>
               )}

@@ -1,7 +1,6 @@
 import { useState, useEffect } from 'react';
 import { useGameState } from './context/GameState';
 import GameBoard from './components/GameBoard';
-import ActionPanel from './components/ActionPanel';
 import PuzzleRaceModal from './components/Modals/PuzzleRaceModal';
 import VoteModal from './components/Modals/VoteModal';
 import DeveloperUpdateModal from './components/Modals/DeveloperUpdateModal';
@@ -54,9 +53,7 @@ function App() {
         <GameBoard />
         
         <div className="side-panel">
-          <ActionPanel />
-          
-          <div className="log-panel">
+          <div className="log-panel" style={{ height: '100%' }}>
             {state.logs.map((log, i) => (
               <div key={i} className="log-entry">{log}</div>
             ))}

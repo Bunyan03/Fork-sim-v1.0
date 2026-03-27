@@ -5,9 +5,8 @@ export default function ActionPanel() {
   const { state, dispatch } = useGameState();
   const [transactAmount, setTransactAmount] = useState(1);
   const [transactTarget, setTransactTarget] = useState(null);
-  const [roleSwapTarget, setRoleSwapTarget] = useState(null);
   
-  // 'NONE', 'TRANSACT', 'ROLE_SWITCH'
+  // 'NONE', 'TRANSACT'
   const [activeForm, setActiveForm] = useState('NONE');
 
   const currentPlayer = state.players[state.currentTurnPlayerIndex];
@@ -18,7 +17,6 @@ export default function ActionPanel() {
     const otherPlayers = state.players.filter(p => p.id !== currentPlayer.id);
     if (otherPlayers.length > 0) {
       if (!transactTarget) setTransactTarget(otherPlayers[0].id);
-      if (!roleSwapTarget) setRoleSwapTarget(otherPlayers[0].id);
     }
   }, [currentPlayer, state.players]);
 
@@ -41,15 +39,8 @@ export default function ActionPanel() {
     setActiveForm('NONE');
   }
 
-  const handleRoleSwapSubmit = () => {
-    dispatch({ type: 'ACTION_ROLE_SWITCH', payload: { targetPlayerId: roleSwapTarget }});
-    setActiveForm('NONE');
-  }
-
   return (
-    <div className="action-dashboard">
-      <h2 className="dashboard-title">{currentPlayer.name}'s Action</h2>
-      
+    <div className="action-panel-inline" style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem', marginTop: '0.5rem' }}>
       {activeForm === 'NONE' && (
         <>
           <button 
@@ -80,19 +71,12 @@ export default function ActionPanel() {
           </button>
 
           <button 
-            className="action-btn btn-danger"
+            className="action-btn"
             disabled={currentPlayer.balance < state.securityLevel}
             onClick={() => dispatch({ type: 'ACTION_CORRUPT_INIT' })}
           >
             <span>Corrupt</span>
             <span>Cost: {state.securityLevel} TK</span>
-          </button>
-
-          <button 
-            className="action-btn"
-            onClick={() => setActiveForm('ROLE_SWITCH')}
-          >
-            <span>Role Switch</span>
           </button>
         </>
       )}
@@ -142,41 +126,6 @@ export default function ActionPanel() {
           </div>
         </div>
       )}
-
-      {activeForm === 'ROLE_SWITCH' && (
-        <div className="quirk-box">
-          <div className="quirk-box-title">Role Switch Target</div>
-          <div className="form-group">
-            <label>Select Player to Swap</label>
-            <select 
-              className="form-control" 
-              value={roleSwapTarget || ''}
-              onChange={e => setRoleSwapTarget(Number(e.target.value))}
-            >
-              {state.players.filter(p => p.id !== currentPlayer.id).map(p => (
-                <option key={p.id} value={p.id}>{p.name}</option>
-              ))}
-            </select>
-          </div>
-          <div style={{ display: 'flex', gap: '1rem', marginTop: '1rem' }}>
-            <button 
-              className="action-btn btn-primary" 
-              style={{ flex: 2 }}
-              onClick={handleRoleSwapSubmit}
-            >
-              Confirm Swap
-            </button>
-            <button 
-              className="action-btn" 
-              style={{ flex: 1, justifyContent: 'center' }}
-              onClick={() => setActiveForm('NONE')}
-            >
-              Cancel
-            </button>
-          </div>
-        </div>
-      )}
-
     </div>
   );
 }
