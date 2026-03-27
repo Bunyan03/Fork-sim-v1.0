@@ -113,7 +113,7 @@ body {
   box-shadow: var(--shadow-quirky);
   transition: all 0.1s;
   position: relative;
-  min-height: 450px;
+  min-height: 250px;
 }
 
 .player-card.active {
@@ -128,7 +128,9 @@ body {
   color: #000;
 }
 
-.player-card.active .history-reason, .player-card.active .text-green, .player-card.active .text-red {
+.player-card.active .history-reason,
+.player-card.active .text-green,
+.player-card.active .text-red {
   color: #fff;
 }
 
@@ -236,14 +238,16 @@ body {
   transform: translate(4px, 4px);
 }
 
-.btn-primary, .btn-danger {
+.btn-primary,
+.btn-danger {
   justify-content: center;
   text-align: center;
   background: #000;
   color: #fff;
 }
 
-.btn-primary:hover:not(:disabled), .btn-danger:hover:not(:disabled) {
+.btn-primary:hover:not(:disabled),
+.btn-danger:hover:not(:disabled) {
   background: #fff;
   color: #000;
   border: var(--border-thick);
@@ -277,14 +281,24 @@ body {
 }
 
 @keyframes slideIn {
-  from { transform: translateX(20px); opacity: 0;}
-  to { transform: translateX(0); opacity: 1;}
+  from {
+    transform: translateX(20px);
+    opacity: 0;
+  }
+
+  to {
+    transform: translateX(0);
+    opacity: 1;
+  }
 }
 
 /* Modals */
 .modal-overlay {
   position: fixed;
-  top: 0; left: 0; right: 0; bottom: 0;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
   background: rgba(255, 255, 255, 0.9);
   display: flex;
   justify-content: center;
@@ -303,8 +317,13 @@ body {
 }
 
 @keyframes popIn {
-  from { transform: scale(0.8) rotate(-5deg); }
-  to { transform: scale(1) rotate(0deg); }
+  from {
+    transform: scale(0.8) rotate(-5deg);
+  }
+
+  to {
+    transform: scale(1) rotate(0deg);
+  }
 }
 
 .modal-title {
@@ -398,7 +417,8 @@ body {
   font-weight: 700;
 }
 
-.text-green, .text-red {
+.text-green,
+.text-red {
   color: #000;
   font-weight: 900;
 }
@@ -407,14 +427,17 @@ body {
 ::-webkit-scrollbar {
   width: 10px;
 }
+
 ::-webkit-scrollbar-track {
   background: #fff;
   border-left: 2px solid #000;
 }
+
 ::-webkit-scrollbar-thumb {
   background: #000;
   border-radius: 0;
 }
+
 ::-webkit-scrollbar-thumb:hover {
   background: #333;
 }
@@ -427,6 +450,7 @@ body {
   box-shadow: 4px 4px 0px #000;
   margin-bottom: 1.5rem;
 }
+
 .quirk-box-title {
   font-weight: 900;
   margin-bottom: 1rem;
