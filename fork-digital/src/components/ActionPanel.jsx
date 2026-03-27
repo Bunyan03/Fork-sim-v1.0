@@ -41,88 +41,88 @@ export default function ActionPanel() {
 
   return (
     <div className="action-panel-inline" style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem', marginTop: '0.5rem' }}>
-      {activeForm === 'NONE' && (
-        <>
-          <button 
-            className="action-btn"
-            disabled={state.treasury < 1}
-            onClick={() => dispatch({ type: 'ACTION_WORK_MINT' })}
-          >
-            <span>Work (Mint)</span>
-            <span style={{color: 'var(--secondary-color)'}}>+1 TK</span>
-          </button>
+      <>
+        <button 
+          className="action-btn"
+          disabled={state.treasury < 1}
+          onClick={() => dispatch({ type: 'ACTION_WORK_MINT' })}
+        >
+          <span>Work (Mint)</span>
+          <span style={{color: 'var(--secondary-color)'}}>+1 TK</span>
+        </button>
 
-          <button 
-            className="action-btn"
-            disabled={currentPlayer.balance < 2}
-            onClick={() => dispatch({ type: 'ACTION_SECURE' })}
-          >
-            <span>Secure Network</span>
-            <span style={{color: 'var(--danger-color)'}}>-2 TK</span>
-          </button>
+        <button 
+          className="action-btn"
+          disabled={currentPlayer.balance < 2}
+          onClick={() => dispatch({ type: 'ACTION_SECURE' })}
+        >
+          <span>Secure Network</span>
+          <span style={{color: 'var(--danger-color)'}}>-2 TK</span>
+        </button>
 
-          <button 
-            className="action-btn"
-            disabled={currentPlayer.balance < 3} // minimum 1 TK + 2 TK fee
-            onClick={() => setActiveForm('TRANSACT')}
-          >
-            <span>Transact</span>
-            <span style={{color: 'var(--danger-color)'}}>Fee: 2 TK</span>
-          </button>
+        <button 
+          className="action-btn"
+          disabled={currentPlayer.balance < 3} // minimum 1 TK + 2 TK fee
+          onClick={() => setActiveForm('TRANSACT')}
+        >
+          <span>Transact</span>
+          <span style={{color: 'var(--danger-color)'}}>Fee: 2 TK</span>
+        </button>
 
-          <button 
-            className="action-btn"
-            disabled={currentPlayer.balance < state.securityLevel}
-            onClick={() => dispatch({ type: 'ACTION_CORRUPT_INIT' })}
-          >
-            <span>Corrupt</span>
-            <span>Cost: {state.securityLevel} TK</span>
-          </button>
-        </>
-      )}
+        <button 
+          className="action-btn"
+          disabled={currentPlayer.balance < state.securityLevel}
+          onClick={() => dispatch({ type: 'ACTION_CORRUPT_INIT' })}
+        >
+          <span>Corrupt</span>
+          <span>Cost: {state.securityLevel} TK</span>
+        </button>
+      </>
 
       {activeForm === 'TRANSACT' && (
-        <div className="quirk-box">
-          <div className="quirk-box-title">Transact Details</div>
-          <div className="form-group">
-            <label>Receiver</label>
-            <select 
-              className="form-control" 
-              value={transactTarget || ''}
-              onChange={e => setTransactTarget(Number(e.target.value))}
-            >
-              {state.players.filter(p => p.id !== currentPlayer.id).map(p => (
-                <option key={p.id} value={p.id}>{p.name}</option>
-              ))}
-            </select>
-          </div>
-          <div className="form-group">
-            <label>Amount (TK)</label>
-            <input 
-              type="number" 
-              className="form-control" 
-              value={transactAmount} 
-              onChange={e => setTransactAmount(Number(e.target.value))}
-              min="1" 
-              max={currentPlayer.balance - 2}
-            />
-          </div>
-          <div style={{ display: 'flex', gap: '1rem', marginTop: '1rem' }}>
-            <button 
-              className="action-btn btn-primary" 
-              style={{ flex: 2 }}
-              disabled={currentPlayer.balance < transactAmount + 2 || transactAmount < 1}
-              onClick={handleTransactSubmit}
-            >
-              Confirm Send
-            </button>
-            <button 
-              className="action-btn" 
-              style={{ flex: 1, justifyContent: 'center' }}
-              onClick={() => setActiveForm('NONE')}
-            >
-              Cancel
-            </button>
+        <div className="modal-overlay">
+          <div className="modal-content" style={{ maxWidth: '400px' }}>
+            <h2 className="modal-title" style={{ fontSize: '2rem' }}>Transact Details</h2>
+            <div className="form-group">
+              <label>Receiver</label>
+              <select 
+                className="form-control" 
+                value={transactTarget || ''}
+                onChange={e => setTransactTarget(Number(e.target.value))}
+              >
+                {state.players.filter(p => p.id !== currentPlayer.id).map(p => (
+                  <option key={p.id} value={p.id}>{p.name}</option>
+                ))}
+              </select>
+            </div>
+            <div className="form-group">
+              <label>Amount (TK)</label>
+              <input 
+                type="number" 
+                className="form-control" 
+                value={transactAmount} 
+                onChange={e => setTransactAmount(Number(e.target.value))}
+                min="1" 
+                max={currentPlayer.balance - 2}
+              />
+            </div>
+            <div style={{ display: 'flex', gap: '1rem', marginTop: '2rem' }}>
+              <button 
+                className="action-btn btn-primary" 
+                style={{ flex: 2 }}
+                disabled={currentPlayer.balance < transactAmount + 2 || transactAmount < 1}
+                onClick={handleTransactSubmit}
+              >
+                Confirm Send
+              </button>
+              <button 
+                className="action-btn" 
+                style={{ flex: 1, justifyContent: 'center' }}
+                onClick={() => setActiveForm('NONE')}
+              >
+                Cancel
+              </button>
+            </div>
           </div>
         </div>
       )}
