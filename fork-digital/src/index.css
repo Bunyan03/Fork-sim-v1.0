@@ -179,7 +179,7 @@ body {
 .side-panel {
   flex: 1;
   background: #fff;
-  border-left: var(--border-thick);
+  border-right: var(--border-thick);
   display: flex;
   flex-direction: column;
   overflow: hidden;

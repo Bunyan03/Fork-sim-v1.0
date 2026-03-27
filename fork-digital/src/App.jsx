@@ -21,10 +21,6 @@ function App() {
 
   return (
     <div className="app-container" style={{ flexDirection: 'row' }}>
-      <main className="main-content" style={{ flex: 3 }}>
-        <GameBoard />
-      </main>
-
       <aside className="side-panel" style={{ flex: 1, display: 'flex', flexDirection: 'column' }}>
         <header className="header" style={{ flexDirection: 'column', padding: '2rem', gap: '2rem', alignItems: 'stretch' }}>
           <div className="header-title" style={{ textAlign: 'center', alignSelf: 'center' }}>FORK <span style={{fontSize:'1rem', color:'#fff', marginLeft: '0.5rem'}}>DIGITAL</span></div>
@@ -60,6 +56,10 @@ function App() {
           ))}
         </div>
       </aside>
+
+      <main className="main-content" style={{ flex: 3 }}>
+        <GameBoard />
+      </main>
 
       {/* Modals for different phases */}
       {showInfo && <GameInfoModal onClose={() => setShowInfo(false)} />}
