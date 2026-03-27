@@ -34,16 +34,10 @@ export default function VoteModal() {
           </p>
         ) : (
           <div style={{marginBottom: '2rem'}}>
-            <p style={{textAlign: 'center'}}>The Developer has proposed a choice. The network must decide.</p>
-            <div className="vote-grid">
-              <div style={{padding: '1rem', border: '1px solid var(--primary-color)', borderRadius: '8px'}}>
-                <h3>Option A</h3>
-                <p>{pending.optionA?.title}</p>
-              </div>
-              <div style={{padding: '1rem', border: '1px solid var(--gold)', borderRadius: '8px'}}>
-                <h3>Option B</h3>
-                <p>{pending.optionB?.title}</p>
-              </div>
+            <p style={{textAlign: 'center'}}>The Developer has proposed the following update. The network must vote YES to accept or NO to reject.</p>
+            <div style={{padding: '1.5rem', border: '2px solid var(--primary-color)', borderRadius: '8px', background: '#fdfdfd', textAlign: 'center'}}>
+              <h3 style={{marginTop: 0, fontSize: '1.5rem'}}>{pending.title}</h3>
+              <p style={{fontSize: '1.2rem', marginBottom: 0}}>{pending.proposedOption?.title}</p>
             </div>
           </div>
         )}
@@ -60,17 +54,8 @@ export default function VoteModal() {
                   <span style={{color: 'var(--secondary-color)', fontWeight: 'bold'}}>Voted</span>
                 ) : (
                   <div style={{display: 'flex', gap: '0.5rem'}}>
-                    {is51Attack ? (
-                      <>
-                        <button className="action-btn btn-danger" style={{padding: '0.5rem 1rem'}} onClick={() => handleVote(voter.id, 'YES')}>YES</button>
-                        <button className="action-btn btn-primary" style={{padding: '0.5rem 1rem', background: 'var(--secondary-color)'}} onClick={() => handleVote(voter.id, 'NO')}>NO</button>
-                      </>
-                    ) : (
-                      <>
-                        <button className="action-btn" style={{padding: '0.5rem 1rem', borderColor: 'var(--primary-color)'}} onClick={() => handleVote(voter.id, 'A')}>Vote A</button>
-                        <button className="action-btn" style={{padding: '0.5rem 1rem', borderColor: 'var(--gold)'}} onClick={() => handleVote(voter.id, 'B')}>Vote B</button>
-                      </>
-                    )}
+                    <button className="action-btn btn-danger" style={{padding: '0.5rem 1rem'}} onClick={() => handleVote(voter.id, 'YES')}>YES</button>
+                    <button className="action-btn btn-primary" style={{padding: '0.5rem 1rem', background: 'var(--secondary-color)'}} onClick={() => handleVote(voter.id, 'NO')}>NO</button>
                   </div>
                 )}
               </div>

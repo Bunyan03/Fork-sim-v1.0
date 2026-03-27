@@ -46,11 +46,10 @@ function gameReducer(state, action) {
     let nextIndex = newState.currentTurnPlayerIndex + 1;
     if (nextIndex >= 6) {
       newState.phase = 'END_ROUND';
-      // Draw 2 cards for Developer
-      let cards = newState.deck.splice(0, 2);
-      if (cards.length < 2) cards = [...cards, ...shuffle(UPDATE_CARDS).splice(0, 2 - cards.length)];
+      let cards = newState.deck.splice(0, 1);
+      if (cards.length < 1) cards = [...cards, ...shuffle(UPDATE_CARDS).splice(0, 1 - cards.length)];
       newState.drawnCards = cards;
-      newState.logs = addLog('Round ' + newState.round + ' turn phase ended. Developer draws Update Cards.');
+      newState.logs = addLog('Round ' + newState.round + ' turn phase ended. Developer draws an Update Card.');
       return newState;
     }
     newState.currentTurnPlayerIndex = nextIndex;
@@ -242,40 +241,45 @@ function gameReducer(state, action) {
     }
 
     case 'DEVELOPER_CHOOSE_UPDATE': {
-       let { chosenCard } = action.payload; // Passed from UI
+       let { proposedOption, title } = action.payload; // Passed from UI
        return { 
          ...state, 
          phase: 'UPDATE_VOTE', 
-         pendingAction: { optionA: chosenCard.optionA, optionB: chosenCard.optionB, title: chosenCard.title, votes: {} }, 
-         logs: addLog(`Developer proposed: ${chosenCard.title}. Network is voting.`) 
+         pendingAction: { proposedOption, title, votes: {} }, 
+         logs: addLog(`Developer proposed: ${proposedOption.title}. Network is voting.`) 
        };
     }
 
     case 'SUBMIT_UPDATE_VOTE': {
-       let { voterId, vote } = action.payload; // vote is 'A' or 'B'
+       let { voterId, vote } = action.payload; // vote is 'YES' or 'NO'
        let pendingAction = { ...state.pendingAction, votes: { ...state.pendingAction.votes, [voterId]: vote } };
        
        let nextState = { ...state, pendingAction };
 
        if (Object.keys(pendingAction.votes).length >= 6) {
-          let aVotes = Object.values(pendingAction.votes).filter(v => v === 'A').length;
-          let bVotes = Object.values(pendingAction.votes).filter(v => v === 'B').length;
-          let outcome = aVotes >= bVotes ? pendingAction.optionA : pendingAction.optionB; // Ties go to A for simplicity
-          
+          let yesVotes = Object.values(pendingAction.votes).filter(v => v === 'YES').length;
+          let noVotes = Object.values(pendingAction.votes).filter(v => v === 'NO').length;
           let players = clonePlayers();
-          let logs = addLog(`Blockchain Update Resolved: ${outcome.title}.`);
+          let logs;
 
-          // Apply outcome effects (Optional/Simplified)
-          if (outcome.effect === 'MINT_BONUS') {
-            players.forEach(p => {
-               p.balance += 2;
-               p.history = [{ amount: 2, reason: 'Update Bonus' }, ...p.history].slice(0, 10);
-            });
-            logs = addLog(`Update Effect: MINT_BONUS. All players received 2 TK.`);
-          } else if (outcome.effect === 'SECURE_PENALTY') {
-             state.securityLevel = Math.max(1, state.securityLevel - 2);
-             logs = addLog(`Update Effect: SECURE_PENALTY. Security dropped by 2.`);
-          } // ... other effects can be implemented here
+          if (yesVotes > noVotes) {
+            logs = addLog(`Blockchain Update Approved: ${pendingAction.proposedOption.title}.`);
+            let outcome = pendingAction.proposedOption;
+
+            // Apply outcome effects (Optional/Simplified)
+            if (outcome.effect === 'MINT_BONUS') {
+              players.forEach(p => {
+                 p.balance += 2;
+                 p.history = [{ amount: 2, reason: 'Update Bonus' }, ...p.history].slice(0, 10);
+              });
+              logs = addLog(`Update Effect: MINT_BONUS. All players received 2 TK.`);
+            } else if (outcome.effect === 'SECURE_PENALTY') {
+               state.securityLevel = Math.max(1, state.securityLevel - 2);
+               logs = addLog(`Update Effect: SECURE_PENALTY. Security dropped by 2.`);
+            } // ... other effects can be implemented here
+          } else {
+            logs = addLog(`Blockchain Update Rejected. Majority voted NO or tied.`);
+          }
 
           if (state.round >= 10) {
              let winner = players.reduce((prev, current) => (prev.balance > current.balance) ? prev : current);
