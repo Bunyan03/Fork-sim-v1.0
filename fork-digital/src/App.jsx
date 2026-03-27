@@ -20,46 +20,46 @@ function App() {
   }, [state.phase, dispatch]);
 
   return (
-    <div className="app-container">
-      <header className="header">
-        <div className="header-title">FORK <span style={{fontSize:'1rem', color:'#fff', marginLeft: '0.5rem'}}>DIGITAL</span></div>
-        <div className="stats-bar">
-          <div style={{ display: 'flex', alignItems: 'center', gap: '1rem' }}>
-            <button 
-              className="action-btn" 
-              style={{ padding: '0', fontSize: '1.5rem', fontWeight: 900, borderRadius: '50%', width: '45px', height: '45px', display: 'flex', justifyContent: 'center', alignItems: 'center' }}
-              onClick={() => setShowInfo(true)}
-              title="Game Instructions"
-            >
-              ?
-            </button>
-            <div className="stat-item">
-              <span className="stat-label">Round</span>
-              <span className="stat-value">{state.round} / 10</span>
+    <div className="app-container" style={{ flexDirection: 'row' }}>
+      <main className="main-content" style={{ flex: 3 }}>
+        <GameBoard />
+      </main>
+
+      <aside className="side-panel" style={{ flex: 1, display: 'flex', flexDirection: 'column' }}>
+        <header className="header" style={{ flexDirection: 'column', padding: '2rem', gap: '2rem', alignItems: 'stretch' }}>
+          <div className="header-title" style={{ textAlign: 'center', alignSelf: 'center' }}>FORK <span style={{fontSize:'1rem', color:'#fff', marginLeft: '0.5rem'}}>DIGITAL</span></div>
+          <div className="stats-bar" style={{ flexDirection: 'column', gap: '1rem' }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '1rem', justifyContent: 'center' }}>
+              <button 
+                className="action-btn" 
+                style={{ padding: '0', fontSize: '1.5rem', fontWeight: 900, borderRadius: '50%', width: '45px', height: '45px', display: 'flex', justifyContent: 'center', alignItems: 'center' }}
+                onClick={() => setShowInfo(true)}
+                title="Game Instructions"
+              >
+                ?
+              </button>
+              <div className="stat-item" style={{ flex: 1 }}>
+                <span className="stat-label">Round</span>
+                <span className="stat-value">{state.round} / 10</span>
+              </div>
+            </div>
+            <div className="stat-item" style={{ flex: 1 }}>
+              <span className="stat-label">Security Level</span>
+              <span className="stat-value" style={{color: 'var(--primary-color)'}}>{state.securityLevel}</span>
+            </div>
+            <div className="stat-item" style={{ flex: 1 }}>
+              <span className="stat-label">Treasury</span>
+              <span className="stat-value">{state.treasury} TK</span>
             </div>
           </div>
-          <div className="stat-item">
-            <span className="stat-label">Security Level</span>
-            <span className="stat-value" style={{color: 'var(--primary-color)'}}>{state.securityLevel}</span>
-          </div>
-          <div className="stat-item">
-            <span className="stat-label">Treasury</span>
-            <span className="stat-value">{state.treasury} TK</span>
-          </div>
-        </div>
-      </header>
+        </header>
 
-      <main className="main-content">
-        <GameBoard />
-        
-        <div className="side-panel">
-          <div className="log-panel" style={{ height: '100%' }}>
-            {state.logs.map((log, i) => (
-              <div key={i} className="log-entry">{log}</div>
-            ))}
-          </div>
+        <div className="log-panel" style={{ flex: 1, height: 'auto', borderTop: 'none', overflowY: 'auto' }}>
+          {state.logs.map((log, i) => (
+            <div key={i} className="log-entry">{log}</div>
+          ))}
         </div>
-      </main>
+      </aside>
 
       {/* Modals for different phases */}
       {showInfo && <GameInfoModal onClose={() => setShowInfo(false)} />}
