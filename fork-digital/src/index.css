@@ -113,7 +113,7 @@ body {
   box-shadow: var(--shadow-quirky);
   transition: all 0.1s;
   position: relative;
-  min-height: 350px;
+  min-height: 325px;
 }
 
 .player-card.active {
