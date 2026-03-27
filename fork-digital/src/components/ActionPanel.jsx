@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react';
+import { createPortal } from 'react-dom';
 import { useGameState } from '../context/GameState';
 
 export default function ActionPanel() {
@@ -79,8 +80,8 @@ export default function ActionPanel() {
         </button>
       </>
 
-      {activeForm === 'TRANSACT' && (
-        <div className="modal-overlay">
+      {activeForm === 'TRANSACT' && createPortal(
+        <div className="modal-overlay" style={{ zIndex: 2000 }}>
           <div className="modal-content" style={{ maxWidth: '400px' }}>
             <h2 className="modal-title" style={{ fontSize: '2rem' }}>Transact Details</h2>
             <div className="form-group">
@@ -124,7 +125,8 @@ export default function ActionPanel() {
               </button>
             </div>
           </div>
-        </div>
+        </div>,
+        document.body
       )}
     </div>
   );
