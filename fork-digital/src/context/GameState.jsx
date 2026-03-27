@@ -1,16 +1,16 @@
 import { createContext, useReducer, useContext } from 'react';
 
 const UPDATE_CARDS = [
-  { id: 1, title: 'Protocol Upgrade', optionA: { title: 'Implement Upgrade', effect: 'MINT_BONUS' }, optionB: { title: 'Delay Upgrade', effect: 'NONE' } },
-  { id: 2, title: 'Network Congestion', optionA: { title: 'Increase Block Size', effect: 'SECURE_PENALTY' }, optionB: { title: 'Keep Block Size', effect: 'NONE' } },
-  { id: 3, title: 'Minority Fork', optionA: { title: 'Support Fork', effect: 'FORK_BONUS' }, optionB: { title: 'Suppress Fork', effect: 'MINORITY_PENALTY' } },
-  { id: 4, title: 'Security Audit', optionA: { title: 'Fund Audit (-10 Treasury)', effect: 'SECURE_BOOST' }, optionB: { title: 'Ignore Audit', effect: 'SECURE_PENALTY' } },
-  { id: 5, title: 'Validator Rewards', optionA: { title: 'Double Rewards', effect: 'VALIDATOR_BONUS' }, optionB: { title: 'Halve Rewards', effect: 'VALIDATOR_PENALTY' } },
-  { id: 6, title: 'Whale Dumping', optionA: { title: 'Freeze Whale Assets', effect: 'WHALE_PENALTY' }, optionB: { title: 'Let Market Decide', effect: 'NONE' } },
-  { id: 7, title: 'Miner Subsidy', optionA: { title: 'Subsidize Miners', effect: 'MINER_BONUS' }, optionB: { title: 'End Subsidy', effect: 'NONE' } },
-  { id: 8, title: 'Treasury Burn', optionA: { title: 'Burn 50% Treasury', effect: 'BURN_DEF', desc: 'Increases value' }, optionB: { title: 'Keep Treasury', effect: 'NONE' } },
-  { id: 9, title: 'Governance Token Airdrop', optionA: { title: 'Airdrop to All', effect: 'AIRDROP' }, optionB: { title: 'Airdrop to Devs only', effect: 'DEV_BONUS' } },
-  { id: 10, title: 'Layer 2 Solution', optionA: { title: 'Adopt L2', effect: 'MINT_BONUS' }, optionB: { title: 'Stay on L1', effect: 'NONE' } },
+  { id: 1, title: 'EIP 001 | Governance', optionA: { title: 'Code is Law: Keep Protocol Slashing. Everyone gains 2 TK for security.', effect: 'EIP_001_A' }, optionB: { title: 'Social Consensus: Activate Governance Era. Enable Free Role Switching.', effect: 'EIP_001_B' } },
+  { id: 2, title: 'The Halving', optionA: { title: 'Deflation: Rewards from "Work" actions are cut to 0.5 TK (round down).', effect: 'HALVING_A' }, optionB: { title: 'Inflation: "Work" stays the same, but Gas Fees increase to 4 TK.', effect: 'HALVING_B' } },
+  { id: 3, title: 'Genesis Airdrop', optionA: { title: 'Equal Distribution: Every player receives 5 TK from the bank.', effect: 'AIRDROP_A' }, optionB: { title: 'Targeted Growth: Only the two players with the fewest tokens get 10 TK.', effect: 'AIRDROP_B' } },
+  { id: 4, title: 'Flash Hack', optionA: { title: 'Self-Insurance: Every player pays 3 TK to the bank to "patch the bug."', effect: 'HACK_A' }, optionB: { title: 'The Sacrifice: One random player (roll a die) loses 15 TK.', effect: 'HACK_B' } },
+  { id: 5, title: 'Proof of Stake', optionA: { title: 'Keep PoW: Miners continue solving puzzles for fees.', effect: 'POS_A' }, optionB: { title: 'Transition to PoS: Miners lose their puzzle ability; the player with the most TK collects fees.', effect: 'POS_B' } },
+  { id: 6, title: 'The Big Burn', optionA: { title: 'Token Burn: The bank destroys half its tokens. "Work" actions are disabled for 1 round.', effect: 'BURN_A' }, optionB: { title: 'Liquidity Injection: The bank doubles its tokens. "Work" rewards are doubled for 1 round.', effect: 'BURN_B' } },
+  { id: 7, title: 'Layer 2 Scaling', optionA: { title: 'Fast Track: Gas fees are reduced to 0 TK for the next 5 transactions.', effect: 'L2_A' }, optionB: { title: 'Security First: Keep fees at 2 TK, but "Secure" actions are now free.', effect: 'L2_B' } },
+  { id: 8, title: 'Dark Pool Trade', optionA: { title: 'Privacy: Transactions are now hidden. The Whale can send tokens without others knowing the amount.', effect: 'DARK_A' }, optionB: { title: 'Transparency: All transactions must be announced loudly. If you forget, you lose 5 TK.', effect: 'DARK_B' } },
+  { id: 9, title: 'The Hard Fork', optionA: { title: 'Chain A: Stay on the original rules. Miners gain 5 TK.', effect: 'FORK_A' }, optionB: { title: 'Chain B: Move to new rules. Validators gain 5 TK. Minority side loses 5 TK.', effect: 'FORK_B' } },
+  { id: 10, title: 'Oracle Failure', optionA: { title: 'Trust the Math: Reset the "Network Security" level to 0. Corruption is now cheaper.', effect: 'ORACLE_A' }, optionB: { title: 'Trust the People: Increase "Network Security" by 10. Corruption is now very expensive.', effect: 'ORACLE_B' } },
 ];
 
 const shuffle = (array) => [...array].sort(() => Math.random() - 0.5);

@@ -24,19 +24,19 @@ function App() {
       <header className="header">
         <div className="header-title">FORK <span style={{fontSize:'1rem', color:'#fff', marginLeft: '0.5rem'}}>DIGITAL</span></div>
         <div className="stats-bar">
-          <div className="stat-item" style={{ flexDirection: 'row', gap: '1rem', alignItems: 'center' }}>
-            <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center'}}>
-              <span className="stat-label">Round</span>
-              <span className="stat-value">{state.round} / 10</span>
-            </div>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '1rem' }}>
             <button 
               className="action-btn" 
-              style={{ padding: '0.2rem 0.8rem', fontSize: '1.5rem', fontWeight: 900, borderRadius: '50%', width: '40px', height: '40px', display: 'flex', justifyContent: 'center', alignItems: 'center' }}
+              style={{ padding: '0', fontSize: '1.5rem', fontWeight: 900, borderRadius: '50%', width: '45px', height: '45px', display: 'flex', justifyContent: 'center', alignItems: 'center' }}
               onClick={() => setShowInfo(true)}
               title="Game Instructions"
             >
               ?
             </button>
+            <div className="stat-item">
+              <span className="stat-label">Round</span>
+              <span className="stat-value">{state.round} / 10</span>
+            </div>
           </div>
           <div className="stat-item">
             <span className="stat-label">Security Level</span>
