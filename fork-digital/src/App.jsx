@@ -5,10 +5,29 @@ import PuzzleRaceModal from './components/Modals/PuzzleRaceModal';
 import VoteModal from './components/Modals/VoteModal';
 import DeveloperUpdateModal from './components/Modals/DeveloperUpdateModal';
 import GameInfoModal from './components/Modals/GameInfoModal';
+import SettingsModal from './components/Modals/SettingsModal';
+import SimulationModal from './components/Modals/SimulationModal';
 
 function App() {
   const { state, dispatch } = useGameState();
   const [showInfo, setShowInfo] = useState(false);
+  const [showSettings, setShowSettings] = useState(false);
+  const [showSimulation, setShowSimulation] = useState(false);
+
+  useEffect(() => {
+    const handleKeyDown = (e) => {
+      if (e.target.tagName !== 'INPUT' && e.target.tagName !== 'TEXTAREA') {
+        if (e.key.toLowerCase() === 'h') {
+          setShowSettings(prev => !prev);
+        }
+        if (e.key.toLowerCase() === 's') {
+          setShowSimulation(prev => !prev);
+        }
+      }
+    };
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, []);
 
   // Handle auto-payout for validators when round starts
   useEffect(() => {
@@ -62,6 +81,8 @@ function App() {
       </main>
 
       {/* Modals for different phases */}
+      {showSettings && <SettingsModal onClose={() => setShowSettings(false)} />}
+      {showSimulation && <SimulationModal onClose={() => setShowSimulation(false)} />}
       {showInfo && <GameInfoModal onClose={() => setShowInfo(false)} />}
       {state.phase === 'PUZZLE_RACE' && <PuzzleRaceModal />}
       {state.phase === 'END_ROUND' && <DeveloperUpdateModal />}

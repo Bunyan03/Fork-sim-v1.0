@@ -15,17 +15,35 @@ const UPDATE_CARDS = [
 
 const shuffle = (array) => [...array].sort(() => Math.random() - 0.5);
 
-const initialState = {
+export const defaultSettings = {
+  maxRounds: 10,
+  mintReward: 1,
+  secureCost: 2,
+  secureGain: 1,
+  gasFee: 2,
+  treasuryStart: 100,
+  posReward: 2,
+  defenseRewardPool: 10,
+  roles: {
+    miner: { startingTokens: 20, voteWeight: 1, attackSuccessPenalty: 5, attackFailPenalty: 0 },
+    whale: { startingTokens: 60, voteWeight: 1, attackSuccessPenalty: 5, attackFailPenalty: 0 },
+    developer: { startingTokens: 15, voteWeight: 1, attackSuccessPenalty: 5, attackFailPenalty: 0 },
+    validator: { startingTokens: 25, voteWeight: 1, attackSuccessPenalty: 5, attackFailPenalty: 0 },
+  }
+};
+
+export const createInitialState = (settings = defaultSettings) => ({
   round: 1,
-  securityLevel: 5, // Start at 5 so 51% attack requires 5 TK
-  treasury: 100, // The Faucet/Treasury balance
+  securityLevel: 5,
+  treasury: settings.treasuryStart,
+  settings,
   players: [
-    { id: 1, name: 'Miner 1', role: 'miner', balance: 20, history: [] },
-    { id: 2, name: 'Miner 2', role: 'miner', balance: 20, history: [] },
-    { id: 3, name: 'Whale', role: 'whale', balance: 60, history: [] },
-    { id: 4, name: 'Developer', role: 'developer', balance: 15, history: [] },
-    { id: 5, name: 'Validator 1', role: 'validator', balance: 25, history: [] },
-    { id: 6, name: 'Validator 2', role: 'validator', balance: 25, history: [] },
+    { id: 1, name: 'Miner 1', role: 'miner', balance: settings.roles.miner.startingTokens, history: [] },
+    { id: 2, name: 'Miner 2', role: 'miner', balance: settings.roles.miner.startingTokens, history: [] },
+    { id: 3, name: 'Whale', role: 'whale', balance: settings.roles.whale.startingTokens, history: [] },
+    { id: 4, name: 'Developer', role: 'developer', balance: settings.roles.developer.startingTokens, history: [] },
+    { id: 5, name: 'Validator 1', role: 'validator', balance: settings.roles.validator.startingTokens, history: [] },
+    { id: 6, name: 'Validator 2', role: 'validator', balance: settings.roles.validator.startingTokens, history: [] },
   ],
   currentTurnPlayerIndex: 0,
   phase: 'START_ROUND', // START_ROUND -> TURN -> PUZZLE_RACE -> 51_ATTACK -> END_ROUND -> UPDATE_VOTE -> NEXT_ROUND
@@ -34,9 +52,11 @@ const initialState = {
   drawnCards: [],
   winner: null,
   logs: ['Game initialized. Welcome to FORK.'],
-};
+});
 
-function gameReducer(state, action) {
+const initialState = createInitialState();
+
+export function gameReducer(state, action) {
   const log = (msg) => `${msg}`;
   const addLog = (msg) => [log(msg), ...state.logs].slice(0, 50);
 
@@ -58,14 +78,15 @@ function gameReducer(state, action) {
 
   switch (action.type) {
     case 'START_ROUND_PAYOUTS': {
-      // Validators receive 2 TK from treasury
+      // Validators receive posReward TK from treasury
       let players = clonePlayers();
       let treasury = state.treasury;
+      let reward = state.settings.posReward;
       players.forEach(p => {
-        if (p.role === 'validator' && treasury >= 2) {
-          p.balance += 2;
-          p.history = [{ amount: 2, reason: 'POS Reward' }, ...p.history].slice(0, 10);
-          treasury -= 2;
+        if (p.role === 'validator' && treasury >= reward) {
+          p.balance += reward;
+          p.history = [{ amount: reward, reason: 'POS Reward' }, ...p.history].slice(0, 10);
+          treasury -= reward;
         }
       });
       return { 
@@ -73,18 +94,19 @@ function gameReducer(state, action) {
         players, 
         treasury, 
         phase: 'TURN', 
-        logs: addLog(`Validators received their 2 TK POS reward.`) 
+        logs: addLog(`Validators received their ${reward} TK POS reward.`) 
       };
     }
     
     case 'ACTION_WORK_MINT': {
       let players = clonePlayers();
       let pIdx = state.currentTurnPlayerIndex;
-      if (state.treasury >= 1) {
-        players[pIdx].balance += 1;
-        players[pIdx].history = [{ amount: 1, reason: 'Work (Mint)' }, ...players[pIdx].history].slice(0, 10);
-        state.treasury -= 1;
-        return nextTurn({ ...state, players, treasury: state.treasury, logs: addLog(`${players[pIdx].name} worked and minted 1 TK.`) });
+      let reward = state.settings.mintReward;
+      if (state.treasury >= reward) {
+        players[pIdx].balance += reward;
+        players[pIdx].history = [{ amount: reward, reason: 'Work (Mint)' }, ...players[pIdx].history].slice(0, 10);
+        state.treasury -= reward;
+        return nextTurn({ ...state, players, treasury: state.treasury, logs: addLog(`${players[pIdx].name} worked and minted ${reward} TK.`) });
       }
       return state;
     }
@@ -92,18 +114,20 @@ function gameReducer(state, action) {
     case 'ACTION_SECURE': {
       let players = clonePlayers();
       let pIdx = state.currentTurnPlayerIndex;
-      if (players[pIdx].balance >= 2) {
-        players[pIdx].balance -= 2;
-        players[pIdx].history = [{ amount: -2, reason: 'Secure Network' }, ...players[pIdx].history].slice(0, 10);
-        state.treasury += 2;
-        state.securityLevel += 1;
+      let cost = state.settings.secureCost;
+      let gain = state.settings.secureGain;
+      if (players[pIdx].balance >= cost) {
+        players[pIdx].balance -= cost;
+        players[pIdx].history = [{ amount: -cost, reason: 'Secure Network' }, ...players[pIdx].history].slice(0, 10);
+        state.treasury += cost;
+        state.securityLevel += gain;
         return nextTurn({ ...state, players, securityLevel: state.securityLevel, logs: addLog(`${players[pIdx].name} secured the network. Security is now ${state.securityLevel}.`) });
       }
       return state;
     }
 
     case 'ACTION_TRANSACT_INIT': {
-      // Init a puzzle race because of transact. Fee is 2 TK + amount.
+      // Init a puzzle race because of transact. 
       let { targetPlayerId, amount } = action.payload;
       let players = clonePlayers();
       let pIdx = state.currentTurnPlayerIndex;
@@ -111,16 +135,16 @@ function gameReducer(state, action) {
       const isWhaleAsynchronous = pIdx !== state.currentTurnPlayerIndex && players.find(p => p.role === 'whale' && p.id === action.payload.senderId);
       const senderIdx = action.payload.senderId ? state.players.findIndex(p => p.id === action.payload.senderId) : pIdx;
 
-      let totalCost = amount + 2; // amount + 2 TK gas fee
+      let fee = state.settings.gasFee;
+      let totalCost = amount + fee; // amount + gas fee
       if (players[senderIdx].balance >= totalCost) {
         players[senderIdx].balance -= totalCost;
         players[senderIdx].history = [{ amount: -totalCost, reason: `Sent TK to P${targetPlayerId}` }, ...players[senderIdx].history].slice(0, 10);
-        // The 2 TK gas goes to pending action for the puzzle race
         return {
           ...state,
           players,
           phase: 'PUZZLE_RACE',
-          pendingAction: { type: 'TRANSACT', amount, targetPlayerId, senderIdx },
+          pendingAction: { type: 'TRANSACT', amount, targetPlayerId, senderIdx, fee },
           logs: addLog(`${players[senderIdx].name} initiated a transaction of ${amount} TK. Puzzle Race started!`)
         };
       }
@@ -128,12 +152,14 @@ function gameReducer(state, action) {
     }
 
     case 'RESOLVE_PUZZLE_RACE': {
-      // Miner who won gets the 2 TK fee.
+      // Miner who won gets the fee.
       let { winnerMinerId } = action.payload;
       let players = clonePlayers();
       let winnerIdx = players.findIndex(p => p.id === winnerMinerId);
-      players[winnerIdx].balance += 2;
-      players[winnerIdx].history = [{ amount: 2, reason: 'Transaction Fee' }, ...players[winnerIdx].history].slice(0, 10);
+      let fee = state.pendingAction.fee || state.settings.gasFee;
+
+      players[winnerIdx].balance += fee;
+      players[winnerIdx].history = [{ amount: fee, reason: 'Transaction Fee' }, ...players[winnerIdx].history].slice(0, 10);
 
       let targetIdx = players.findIndex(p => p.id === state.pendingAction.targetPlayerId);
       players[targetIdx].balance += state.pendingAction.amount;
@@ -175,40 +201,65 @@ function gameReducer(state, action) {
       
       // Check if all 5 others have voted
       if (Object.keys(pendingAction.votes).length >= 5) {
-        let yesVotes = Object.values(pendingAction.votes).filter(v => v === 'YES').length;
-        let noVotes = Object.values(pendingAction.votes).filter(v => v === 'NO').length;
         let players = clonePlayers();
+        let yesVotes = 0;
+        let noVotes = 0;
+
+        Object.entries(pendingAction.votes).forEach(([vId, v]) => {
+           let voter = players.find(p => p.id === parseInt(vId));
+           let weight = state.settings.roles[voter.role]?.voteWeight ?? 1;
+           if (v === 'YES') yesVotes += weight;
+           else if (v === 'NO') noVotes += weight;
+        });
+
         let logs;
         let treasury = state.treasury;
 
         if (yesVotes > noVotes) { // Success
-          // NO voters pay 5 TK
+          // NO voters pay penalty depending on role
           let penaltySum = 0;
           players.forEach(p => {
              if (pendingAction.votes[p.id] === 'NO') {
-                let paid = Math.min(p.balance, 5);
-                p.balance -= paid;
-                p.history = [{ amount: -paid, reason: 'Attack Penalty' }, ...p.history].slice(0, 10);
-                penaltySum += paid;
+                let rulePenalty = state.settings.roles[p.role]?.attackSuccessPenalty ?? 5;
+                let paid = Math.min(p.balance, rulePenalty);
+                if (paid > 0) {
+                    p.balance -= paid;
+                    p.history = [{ amount: -paid, reason: 'Attack Penalty' }, ...p.history].slice(0, 10);
+                    penaltySum += paid;
+                }
              }
           });
           // Distributed to Attacker + YES voters
           let receivers = [players[pendingAction.attackerIdx], ...players.filter(p => pendingAction.votes[p.id] === 'YES')];
           let split = Math.floor(penaltySum / receivers.length);
-          receivers.forEach(r => {
-             r.balance += split;
-             if (split > 0) r.history = [{ amount: split, reason: 'Attack Loot' }, ...r.history].slice(0, 10);
-          });
+          if (split > 0) {
+              receivers.forEach(r => {
+                 r.balance += split;
+                 r.history = [{ amount: split, reason: 'Attack Loot' }, ...r.history].slice(0, 10);
+              });
+          }
           logs = addLog(`51% Attack SUCCESS. NO-voters penalized.`);
         } else { // Failure
-          // Attacker + YES voters forfeit investment to treasury. Wait, attacker already paid `cost`. YES voters didn't invest upfront, rule says "Attacker and all YES-voters forfeit their entire investment". 
-          // Let's assume YES voters also lose something or just attacker loses investment. Rule: "Attacker and YES voters forfeit investment". Since only attacker invested, YES voters forfeit nothing unless they also pooled. We'll just take the attacker's cost to treasury.
-          treasury += pendingAction.cost;
-          // NO voters split 10 TK reward from treasury
+          // Attacker + YES voters forfeit investment/penalized
+          players.forEach(p => {
+             if (pendingAction.votes[p.id] === 'YES' || p.id === players[pendingAction.attackerIdx].id) {
+                let rulePenalty = state.settings.roles[p.role]?.attackFailPenalty ?? 0;
+                let paid = Math.min(p.balance, rulePenalty);
+                if (paid > 0) {
+                    p.balance -= paid;
+                    p.history = [{ amount: -paid, reason: 'Attack Failed Penalty' }, ...p.history].slice(0, 10);
+                    treasury += paid;
+                }
+             }
+          });
+          treasury += pendingAction.cost; // Add attacker's initial cost to treasury
+          
+          // NO voters split reward pool from treasury
           let noVoters = players.filter(p => pendingAction.votes[p.id] === 'NO');
-          if (treasury >= 10 && noVoters.length > 0) {
-            treasury -= 10;
-            let split = Math.floor(10 / noVoters.length);
+          let rewardPool = state.settings.defenseRewardPool;
+          if (treasury >= rewardPool && noVoters.length > 0) {
+            treasury -= rewardPool;
+            let split = Math.floor(rewardPool / noVoters.length);
             noVoters.forEach(nv => {
                nv.balance += split;
                if (split > 0) nv.history = [{ amount: split, reason: 'Defense Reward' }, ...nv.history].slice(0, 10);
@@ -257,9 +308,17 @@ function gameReducer(state, action) {
        let nextState = { ...state, pendingAction };
 
        if (Object.keys(pendingAction.votes).length >= 6) {
-          let yesVotes = Object.values(pendingAction.votes).filter(v => v === 'YES').length;
-          let noVotes = Object.values(pendingAction.votes).filter(v => v === 'NO').length;
           let players = clonePlayers();
+          let yesVotes = 0;
+          let noVotes = 0;
+          
+          Object.entries(pendingAction.votes).forEach(([vId, v]) => {
+             let voter = players.find(p => p.id === parseInt(vId));
+             let weight = state.settings.roles[voter.role]?.voteWeight ?? 1;
+             if (v === 'YES') yesVotes += weight;
+             else if (v === 'NO') noVotes += weight;
+          });
+
           let logs;
 
           if (yesVotes > noVotes) {
@@ -281,7 +340,7 @@ function gameReducer(state, action) {
             logs = addLog(`Blockchain Update Rejected. Majority voted NO or tied.`);
           }
 
-          if (state.round >= 10) {
+          if (state.round >= state.settings.maxRounds) {
              let winner = players.reduce((prev, current) => (prev.balance > current.balance) ? prev : current);
              return { ...state, players, phase: 'GAME_OVER', winner, logs: addLog(`GAME OVER! ${winner.name} wins with ${winner.balance} TK!`) };
           } else {
@@ -291,8 +350,16 @@ function gameReducer(state, action) {
        return nextState;
     }
 
+    case 'UPDATE_SETTINGS': {
+      return { ...state, settings: action.payload };
+    }
+
+    case 'APPLY_SETTINGS_AND_RESTART': {
+      return createInitialState(action.payload);
+    }
+
     case 'RESET_GAME':
-      return initialState;
+      return createInitialState(state.settings);
 
     default:
       return state;
